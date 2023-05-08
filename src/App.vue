@@ -3,8 +3,6 @@
 import { ref } from 'vue'
 
 
-
-
 const listaCompras = ref([
 {
         id: 1,
@@ -68,25 +66,32 @@ const listaCompras = ref([
     }
 ])
 
-const carrinhos = ref([
-{
-        id: 10,
-        nome: 'Meia',
-        preco: 9.90,
-        quantidade: 0,
-    }
-])
+const carrinhos = ref({
+  items: [],
+  total: 0,
+    
+})
 
 function incrementar(index) {
     listaCompras.value[index].quantidade++
   }
-  function descrementar(index) {
-    listaCompras.value[index].quantidade--
+  function decrementar(index) {
+    if(listaCompras.value[index].quantidade > 0){
+      listaCompras.value[index].quantidade--
+    }
   }
   
   function adicionar(index) {
-    carrinhos.value.push(listaCompras.value)
-    carrinhos.value = ''
+    if(listaCompras.value[index].quantidade > 0){
+      
+      carrinhos.value.items.push(
+        {...listaCompras.value[index], preco: listaCompras.value[index].quantidade * listaCompras.value[index].preco}
+      );
+      
+      carrinhos.value.total = carrinhos.value.total + listaCompras.value[index].preco * listaCompras.value[index].quantidade
+       
+    }
+    
   }
 </script>
 
@@ -99,16 +104,27 @@ function incrementar(index) {
         <p>ID: {{ item.id }}</p>
         <p>quantidade: {{ item.quantidade }}</p>
         <button @click="incrementar(index)">+</button>
-        <button @click="descrementar(index)">-</button>
-        <button @click="adicionar">Adicionar</button>
+        <button @click="decrementar(index)">-</button>
+        <button @click="adicionar(index)">Adicionar</button>
       </li>
     </ul>
     <hr>
-    <li v-for="item in carrinhos">
+  </div>
+
+  <div class="carrinhoC">
+  <ul>
+
+    <li v-for="item in carrinhos.items">
         <p>Item: {{ item.nome }}</p>
-        <p>Preco: {{ item.preco }}</p>
+        <p>Preco: {{ item.preco.toFixed(2) }}</p>
         <p>ID: {{ item.id }}</p>
+        <p>Quantidade: {{ item.quantidade }}</p>
+
+       
     </li>
+
+    <p> Total:{{ carrinhos.total.toFixed(2) }}</p>
+  </ul>
   </div>
 </template>
 
